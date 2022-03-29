@@ -51,30 +51,41 @@ if st.button('Predict'):
     linear_price = predict_price(linear, location_input, area_input, bath_input, bhk_input)
     forest_price = predict_price(forest, location_input, area_input, bath_input, bhk_input)
     ridge_price = predict_price(ridge, location_input, area_input, bath_input, bhk_input)
-    lp=0.0
-    rp=0.0
+    minp=0.0
+    maxp=0.0
+    min_price = np.round(min(linear_price, forest_price), 2)
+    max_price = np.round(max(linear_price, forest_price), 2)
     col3,col4 = st.columns(2)
     with col3:
-        if linear_price >= 100:
-            lp = np.abs(np.round(linear_price/100,2))
-            st.success('Linear Model Prediction = Rs. {} crores'.format(lp))
+        if min_price >= 100:
+            minp = np.abs(np.round(min_price/100,2))
+            st.success('Minimum Prediction = Rs.   {} crores'.format(minp))
         else:
-            lp = np.abs(np.round(linear_price,2))
-            st.success('Linear Model Prediction = Rs. {} lacs'.format(lp))
+            minp = np.abs(np.round(min_price,2))
+            st.success('Minimum Price Prediction = Rs.   {} lacs'.format(minp))
     with col4:
-        if forest_price >= 100:
-            rp = np.abs(np.round(forest_price/100,2))
-            st.success('Ridge Model Prediction = Rs. {} crores'.format(rp))
+        if max_price >= 100:
+            maxp = np.abs(np.round(max_price/100,2))
+            st.success('Maximum Price Prediction = Rs. {} crores'.format(maxp))
         else:
-            rp = np.abs(np.round(forest_price,2))
-            st.success('Ridge Model Prediction = Rs. {} lacs'.format(rp))
+            maxp = np.abs(np.round(max_price,2))
+            st.success('Maximum Price Prediction = Rs. {} lacs'.format(maxp))
+
+
+    average_price = (min_price + max_price) / 2
+    min_price_sqft = (min_price/area_input)*100000
+    max_price_sqft = (max_price/area_input)*100000
     prices = {
         'Location': location_input,
         'BHK': int(bhk_input),
         'Bathrooms': int(bath_input),
         'Area (in sqft.)':np.round(area_input,2),
-        'Minimum Price (Rs.)':np.round(min(lp,rp),2),
-        'Maximum Price (Rs.)':np.round(max(lp,rp),2),
+        'Minimum Price (in lacs) ':min_price,
+        'Minimum Price per sqft.':min_price_sqft,
+        'Maximum Price (in lacs) ':max_price,
+        'Maximum Price per sqft.': max_price_sqft,
+        'Average Price (in lacs)': average_price
     }
     df = pd.DataFrame(prices,index=[0])
-    st.dataframe(df)
+    df2 = df.transpose()
+    st.table(df)
