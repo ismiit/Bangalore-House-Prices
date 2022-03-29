@@ -73,8 +73,15 @@ if st.button('Predict'):
 
 
     average_price = (min_price + max_price) / 2
-    min_price_sqft = (min_price/area_input)*100000
-    max_price_sqft = (max_price/area_input)*100000
+    if(min_price<100):
+        min_price_sqft = (min_price / area_input) * 100000
+    else:
+        min_price_sqft = (min_price / area_input) * 10000
+    if(max_price<100):
+        max_price_sqft = (max_price/area_input)*100000
+    else:
+        max_price_sqft = (max_price / area_input) * 10000
+
     prices = {
         'Location': location_input,
         'BHK': int(bhk_input),
